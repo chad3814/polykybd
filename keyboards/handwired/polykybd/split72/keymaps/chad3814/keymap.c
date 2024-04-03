@@ -43,8 +43,8 @@
 //1 min
 #define FADE_OUT_TIME 60000
 //20 min
-//#define TURN_OFF_TIME 1200000
-#define TURN_OFF_TIME 120000
+#define TURN_OFF_TIME 1200000
+//#define TURN_OFF_TIME 120000
 
 /*[[[cog
 import cog
@@ -627,7 +627,7 @@ uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    ├────────┼───────┼───────┼───────┼───────┼───────┼───────┼────────╮  ╭────────┼───────┼───────┼───────┼───────┼───────┼───────┼────────┤
    │ Shift  │   z   │   x   │   c   │   v   │   b   │   F8  │ ScrCap │  │  PgUp  │ Intl  │   n   │   m   │   ,<  │   .>  │  /?   │   =+   │
    └┬───────┼───────┼───────┼───────┼──────┬┴───────┼───────┼────────┤  ├────────┼───────┼───────┴┬──────┼───────┼───────┼───────┼───────┬┘
-    │ Ctrl  │  Os   │  Alt  │ Left  │      │  Right │ Space │  Num!  │  │  PgDn  │ BckSp │  Enter │      │   Up  │ Down  │ RCtrl │ BackSp│
+    │ Ctrl  │  Os   │  Alt  │ Left  │      │  Right │ Space │  Num!  │  │  PgDn  │ BckSp │  Enter │      │   Up  │ Down  │ Emoji │ BackSp│
     └───────┴───────┴───────┴───────┘      └────────┴───────┴────────╯  └────────┴───────┴────────┘      └───────┴───────┴───────┴───────┘
 */
     [_L5] = LAYOUT_left_right_stacked(
@@ -641,7 +641,7 @@ uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                     KC_LOCK,       KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,     KC_BSLS,
         KC_NO,      KC_RBRC,       KC_H,       KC_J,       KC_K,       KC_L,       KC_SCLN,  KC_QUOTE,
         KC_PGUP,    MO(_ADDLANG1), KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLASH, KC_EQUAL,
-        KC_PGDN,    KC_BACKSPACE,  KC_ENTER,                KC_UP,     KC_DOWN,    KC_RCTL,  KC_BACKSPACE
+        KC_PGDN,    KC_BACKSPACE,  KC_ENTER,                KC_UP,     KC_DOWN,    TO(_EMJ1),  KC_BACKSPACE
         ),
     //Function Layer (Fn)
     [_FL0] = LAYOUT_left_right_stacked(
@@ -1958,9 +1958,9 @@ bool oled_task_user(void) {
 bool encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) { /* First encoder */
         if (clockwise) {
-            tap_code(KC_PGDN);
-        } else {
             tap_code(KC_PGUP);
+        } else {
+            tap_code(KC_PGDN);
         }
     } else if (index == 1) { /* Second encoder */
         if (clockwise) {

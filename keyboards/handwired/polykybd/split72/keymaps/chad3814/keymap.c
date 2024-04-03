@@ -639,7 +639,7 @@ uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
                     KC_3FS,        KC_6,       KC_7,       KC_8,       KC_9,       KC_0,     KC_MINUS,
                     KC_LOCK,       KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,     KC_BSLS,
-        KC_NO,      KC_LBRC,       KC_H,       KC_J,       KC_K,       KC_L,       KC_SCLN,  KC_QUOTE,
+        KC_NO,      KC_RBRC,       KC_H,       KC_J,       KC_K,       KC_L,       KC_SCLN,  KC_QUOTE,
         KC_PGUP,    MO(_ADDLANG1), KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLASH, KC_EQUAL,
         KC_PGDN,    KC_BACKSPACE,  KC_ENTER,                KC_UP,     KC_DOWN,    KC_RCTL,  KC_BACKSPACE
         ),
@@ -1956,12 +1956,19 @@ bool oled_task_user(void) {
 }
 
 bool encoder_update_user(uint8_t index, bool clockwise) {
-    if (clockwise) {
-      tap_code(KC_WH_U);
-    } else {
-      tap_code(KC_WH_D);
+    if (index == 0) { /* First encoder */
+        if (clockwise) {
+            tap_code(KC_PGDN);
+        } else {
+            tap_code(KC_PGUP);
+        }
+    } else if (index == 1) { /* Second encoder */
+        if (clockwise) {
+            tap_code(KC_VOLD);
+        } else {
+            tap_code(KC_VOLU);
+        }
     }
-
     return false;
 }
 

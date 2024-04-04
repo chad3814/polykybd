@@ -627,7 +627,7 @@ uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    ├────────┼───────┼───────┼───────┼───────┼───────┼───────┼────────╮  ╭────────┼───────┼───────┼───────┼───────┼───────┼───────┼────────┤
    │ Shift  │   z   │   x   │   c   │   v   │   b   │   F8  │ ScrCap │  │  PgUp  │ Intl  │   n   │   m   │   ,<  │   .>  │  /?   │   =+   │
    └┬───────┼───────┼───────┼───────┼──────┬┴───────┼───────┼────────┤  ├────────┼───────┼───────┴┬──────┼───────┼───────┼───────┼───────┬┘
-    │ Ctrl  │  Os   │  Alt  │ Left  │      │  Right │ Space │  Num!  │  │  PgDn  │ BckSp │  Enter │      │   Up  │ Down  │ Emoji │ BackSp│
+    │ Ctrl  │  Alt  │  Left │ Right │      │ Spc/Emj│   OS  │  Num!  │  │  PgDn  │ BckSp │  Enter │      │   Up  │ Down  │ Emoji │ BackSp│
     └───────┴───────┴───────┴───────┘      └────────┴───────┴────────╯  └────────┴───────┴────────┘      └───────┴───────┴───────┴───────┘
 */
     [_L5] = LAYOUT_left_right_stacked(
@@ -635,13 +635,13 @@ uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,     KC_Q,          KC_W,       KC_E,       KC_R,       KC_T,       KC_ESC,
         MO(_FL0),   KC_A,          KC_S,       KC_D,       KC_F,       KC_G,       KC_LBRC,  KC_MS_BTN1,
         KC_LSFT,    KC_Z,          KC_X,       KC_C,       KC_V,       KC_B,       KC_F8,    KC_SCRENCAP,
-        KC_LCTL,    KC_LWIN,       KC_LALT,    KC_LEFT,                KC_RIGHT,   KC_SPACE, MO(_NL),
+        KC_LCTL,    KC_LALT,       KC_LEFT,    KC_RIGHT,        LT(_EMJ0, KC_SPACE), KC_OS,  MO(_NL),
 
                     KC_3FS,        KC_6,       KC_7,       KC_8,       KC_9,       KC_0,     KC_MINUS,
                     KC_LOCK,       KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,     KC_BSLS,
         KC_NO,      KC_RBRC,       KC_H,       KC_J,       KC_K,       KC_L,       KC_SCLN,  KC_QUOTE,
         KC_PGUP,    MO(_ADDLANG1), KC_N,       KC_M,       KC_COMMA,   KC_DOT,     KC_SLASH, KC_EQUAL,
-        KC_PGDN,    KC_BACKSPACE,  KC_ENTER,                KC_UP,     KC_DOWN,    TO(_EMJ1),  KC_BACKSPACE
+        KC_PGDN,    KC_BACKSPACE,  KC_ENTER,               KC_UP,     KC_DOWN,     TO(_EMJ1),  KC_BACKSPACE
         ),
     //Function Layer (Fn)
     [_FL0] = LAYOUT_left_right_stacked(
@@ -813,6 +813,7 @@ led_config_t g_led_config = { {// Key Matrix to LED Index
                              } };
 
 const uint16_t* keycode_to_disp_text(uint16_t keycode, led_t state) {
+    uint8_t input_mode = get_unicode_input_mode();
     switch (keycode) {
     /*[[[cog
     wb = load_workbook(filename = os.path.join(os.path.abspath(os.path.dirname(cog.inFile)), "lang/lang_lut.xlsx"), data_only=True)
@@ -978,12 +979,18 @@ const uint16_t* keycode_to_disp_text(uint16_t keycode, led_t state) {
     case LBL_TEXT: return u"Text:";
     case KC_TOGMODS: return (g_local.flags&MODS_AS_TEXT)==0 ? u"Mods\r\v" ICON_SWITCH_OFF : u"Mods\r\v" ICON_SWITCH_ON;
     case KC_TOGTEXT: return (g_local.flags&MORE_TEXT)==0 ? u"Cmds\r\v" ICON_SWITCH_OFF : u"Cmds\r\v" ICON_SWITCH_ON;
-    case QK_UNICODE_MODE_MACOS: return u"Mac";
-    case QK_UNICODE_MODE_LINUX: return u"Lnx";
-    case QK_UNICODE_MODE_WINDOWS: return u"Win";
-    case QK_UNICODE_MODE_BSD: return u"BSD";
-    case QK_UNICODE_MODE_WINCOMPOSE: return u"WinC";
-    case QK_UNICODE_MODE_EMACS: return u"Emcs";
+    case QK_UNICODE_MODE_MACOS:
+        return input_mode==UNICODE_MODE_MACOS ? u"Mac\r\v" ICON_SWITCH_ON : u"Mac\r\v" ICON_SWITCH_OFF;
+    case QK_UNICODE_MODE_LINUX:
+        return input_mode==UNICODE_MODE_LINUX ? u"Lnx\r\v" ICON_SWITCH_ON : u"Lnx\r\v" ICON_SWITCH_OFF;
+    case QK_UNICODE_MODE_WINDOWS:
+        return input_mode==UNICODE_MODE_WINDOWS ? u"Win\r\v" ICON_SWITCH_ON : u"Win\r\v" ICON_SWITCH_OFF;
+    case QK_UNICODE_MODE_BSD:
+        return input_mode==UNICODE_MODE_BSD ? u"BSD\r\v" ICON_SWITCH_ON : u"BSD\r\v" ICON_SWITCH_OFF;
+    case QK_UNICODE_MODE_WINCOMPOSE:
+        return input_mode==UNICODE_MODE_WINCOMPOSE ? u"WinC\r\v" ICON_SWITCH_ON : u"WinC\r\v" ICON_SWITCH_OFF;
+    case QK_UNICODE_MODE_EMACS:
+        return input_mode==UNICODE_MODE_EMACS ? u"Emcs\r\v" ICON_SWITCH_ON : u"Emcs\r\v" ICON_SWITCH_OFF;
     case QK_LEAD:
         return u"Lead";
     case KC_HYPR:
@@ -1226,13 +1233,15 @@ const uint16_t* keycode_to_disp_text(uint16_t keycode, led_t state) {
     case DE_GRV: //for Neo Layout
         return u"`";
     case KC_SAVE: // for chad3814 layout
-        return u"Save";
+        return (g_local.flags&MORE_TEXT)!=0 ? u"Save" : PRIVATE_FLOPPY;
     case KC_SCRENCAP: // for chad3814
-        return u"ScrnCap";
+        return (g_local.flags&MORE_TEXT)!=0 ? u"ScCp" : PRINT_SCREEN;
     case KC_3FS: // for chad3814
         return u"3FS";
     case KC_LOCK: // for chad3814
         return u"    " PRIVATE_LOCK;
+    case LT(_EMJ0, KC_SPACE): // for chad3814
+        return ICON_SPACE u" " PRIVATE_EMOJI_1F600 u"\v" ICON_LAYER;
     /*[[[cog
         for lang in languages:
             short = lang.split("_")[1]
@@ -1895,11 +1904,12 @@ void oled_update_buffer(void) {
         }
     } else {
         switch(g_local.default_ls) {
-            case 0: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Qwerty"); break;
-            case 1: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Qwerty Stag!"); break;
-            case 2: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Colemak DH"); break;
-            case 3: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Neo"); break;
-            case 4: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Workman"); break;
+            case _L0: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Qwerty"); break;
+            case _L1: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Qwerty Stag!"); break;
+            case _L2: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Colemak DH"); break;
+            case _L3: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Neo"); break;
+            case _L4: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Workman"); break;
+            case _L5: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Chad3814"); break;
             default: kdisp_write_gfx_text(smallFont, 1, 0, 30, u"Unknown"); break;
         }
         kdisp_write_gfx_text(smallFont, 1, 0, 44, u"Dsp*");

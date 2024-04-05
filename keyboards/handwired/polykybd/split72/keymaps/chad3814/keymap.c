@@ -635,7 +635,7 @@ uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,     KC_Q,          KC_W,       KC_E,       KC_R,       KC_T,       KC_ESC,
         MO(_FL0),   KC_A,          KC_S,       KC_D,       KC_F,       KC_G,       KC_LBRC,  KC_MS_BTN1,
         KC_LSFT,    KC_Z,          KC_X,       KC_C,       KC_V,       KC_B,       KC_F8,    KC_SCRENCAP,
-        KC_LCTL,    KC_LALT,       KC_LEFT,    KC_RIGHT,        LT(_EMJ0, KC_SPACE), KC_OS,  MO(_NL),
+        KC_LCTL,    KC_LALT,       KC_LEFT,    KC_RIGHT,        LT(_EMJ0, KC_SPACE), KC_APP,  MO(_NL),
 
                     KC_3FS,        KC_6,       KC_7,       KC_8,       KC_9,       KC_0,     KC_MINUS,
                     KC_LOCK,       KC_Y,       KC_U,       KC_I,       KC_O,       KC_P,     KC_BSLS,
@@ -1229,7 +1229,7 @@ const uint16_t* keycode_to_disp_text(uint16_t keycode, led_t state) {
     case KC_LNG1:
         return u"Han/Y";
     case KC_APP:
-        return u" Ctx";
+        return u" " TECHNICAL_COMMAND;
     case DE_GRV: //for Neo Layout
         return u"`";
     case KC_SAVE: // for chad3814 layout
